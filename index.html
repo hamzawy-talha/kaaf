@@ -3,69 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>قائمة المنتجات والأسعار</title>
+  <title>كاف للمنتجات الطبيعية</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- مكتبة Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
   <style>
     :root {
-      --primary: #2d5a27;
-      --primary-dark: #1e3f1a;
-      --accent: #d97706;
-      --bg: #faf8f5;
+      --primary: #3b5229;
+      --primary-dark: #253618;
+      --gold: #c69749;
+      --bg: #f6f1e7;
       --card-bg: #ffffff;
       --text: #1f2937;
       --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-      --radius: 16px;
+      --border: #e6dfd1;
+      --shadow: 0 6px 24px rgba(37, 54, 24, 0.08);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Cairo', sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.6;
-      padding-bottom: 90px;
+      padding-bottom: 100px;
     }
 
     /* الهيدر */
     header {
       background: linear-gradient(135deg, var(--primary-dark), var(--primary));
       color: #fff;
-      padding: 48px 20px 60px;
+      padding: 42px 20px 64px;
       text-align: center;
-      position: relative;
+      border-bottom: 4px solid var(--gold);
+    }
+
+    .brand-badge {
+      display: inline-block;
+      background: rgba(198, 151, 73, 0.2);
+      border: 1px solid var(--gold);
+      color: #fde68a;
+      padding: 4px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 10px;
     }
 
     header h1 {
-      font-size: 2.3rem;
+      font-size: 2.2rem;
       font-weight: 800;
       margin-bottom: 8px;
     }
 
     header p {
-      font-size: 1rem;
+      font-size: 0.98rem;
       opacity: 0.92;
-      max-width: 650px;
+      max-width: 700px;
       margin: 0 auto;
     }
 
-    /* شريط البحث والفلاتر */
+    /* صندوق البحث وسويبر الأقسام */
     .controls-wrapper {
-      max-width: 1100px;
-      margin: -30px auto 30px;
+      max-width: 1180px;
+      margin: -34px auto 30px;
       padding: 0 16px;
       position: relative;
       z-index: 10;
@@ -74,11 +82,9 @@
     .controls-box {
       background: var(--card-bg);
       padding: 18px;
-      border-radius: var(--radius);
+      border-radius: 18px;
       box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
+      border: 1px solid var(--border);
     }
 
     .search-input {
@@ -89,51 +95,78 @@
       font-family: inherit;
       font-size: 1rem;
       outline: none;
+      margin-bottom: 14px;
+      background: #fdfbf7;
       transition: border-color 0.2s;
     }
 
     .search-input:focus {
       border-color: var(--primary);
+      background: #fff;
     }
 
-    .filter-tabs {
+    /* سويبر الأقسام العلوي */
+    .categories-swiper {
+      padding: 4px 2px 8px;
+    }
+
+    .categories-swiper .swiper-slide {
+      width: auto;
+    }
+
+    .cat-pill {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       gap: 8px;
-    }
-
-    .filter-btn {
-      border: 1px solid var(--border);
-      background: #f9fafb;
+      border: 1.5px solid var(--border);
+      background: #fdfbf7;
       color: var(--text);
-      padding: 8px 16px;
+      padding: 9px 18px;
       border-radius: 999px;
       font-family: inherit;
       font-size: 0.92rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
+      white-space: nowrap;
+      transition: all 0.25s;
     }
 
-    .filter-btn:hover {
-      background: #f3f4f6;
+    .cat-pill:hover {
+      border-color: var(--gold);
+      background: #fef9ee;
     }
 
-    .filter-btn.active {
+    .cat-pill.active {
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(59, 82, 41, 0.25);
     }
 
-    /* المحتوى الرئيسي والأقسام */
+    .cat-count {
+      font-size: 0.75rem;
+      background: rgba(0, 0, 0, 0.08);
+      padding: 1px 7px;
+      border-radius: 999px;
+    }
+
+    .cat-pill.active .cat-count {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    /* المحتوى */
     main {
-      max-width: 1100px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 0 16px;
     }
 
     .category-section {
-      margin-bottom: 44px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px 18px;
+      margin-bottom: 30px;
     }
 
     .category-header {
@@ -141,17 +174,24 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 18px;
-      padding-bottom: 10px;
+      padding-bottom: 12px;
       border-bottom: 2px solid var(--border);
+    }
+
+    .category-title-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
     }
 
     .category-title {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 1.5rem;
+      gap: 8px;
+      font-size: 1.4rem;
       font-weight: 800;
       color: var(--primary-dark);
     }
@@ -159,82 +199,130 @@
     .category-note {
       background: #fef3c7;
       color: #92400e;
-      padding: 5px 14px;
+      padding: 4px 12px;
       border-radius: 999px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
     }
 
-    /* شبكة المنتجات */
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 16px;
+    .view-toggle-btn {
+      background: #fff;
+      border: 1px solid var(--gold);
+      color: var(--primary-dark);
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
+    .view-toggle-btn:hover {
+      background: var(--gold);
+      color: #fff;
+    }
+
+    /* سلايدر المنتجات */
+    .products-swiper {
+      padding: 6px 4px 38px !important;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      background: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
+      color: var(--primary-dark) !important;
+      top: 44%;
+    }
+
+    .swiper-button-next::after,
+    .swiper-button-prev::after {
+      font-size: 15px !important;
+      font-weight: 800;
+    }
+
+    .swiper-pagination-bullet-active {
+      background: var(--primary) !important;
+    }
+
+    /* الشبكة عند الضغط على عرض الكل */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    /* بطاقة المنتج */
     .product-card {
       background: var(--card-bg);
       border-radius: 14px;
-      padding: 18px;
+      padding: 16px;
+      height: 100%;
+      min-height: 145px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-      border: 1px solid #f0eee9;
+      border: 1px solid #ede7db;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .product-card:hover {
       transform: translateY(-3px);
       box-shadow: var(--shadow);
+      border-color: var(--gold);
     }
 
     .product-name {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: 700;
       color: var(--text);
     }
 
     .product-unit {
       display: inline-block;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
-      background: #f3f4f6;
+      background: #f5f2eb;
       padding: 2px 10px;
       border-radius: 6px;
-      margin-top: 4px;
+      margin-top: 6px;
+      font-weight: 600;
     }
 
     .product-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 6px;
       padding-top: 10px;
       border-top: 1px dashed var(--border);
     }
 
     .product-price {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 800;
       color: var(--primary);
     }
 
     .product-price.no-price {
-      font-size: 0.92rem;
-      color: var(--accent);
+      font-size: 0.88rem;
+      color: #b45309;
     }
 
     .add-btn {
-      background: #eef6ed;
-      color: var(--primary);
+      background: #eef3ea;
+      color: var(--primary-dark);
       border: none;
       padding: 6px 12px;
       border-radius: 8px;
       font-family: inherit;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -244,19 +332,20 @@
       color: #fff;
     }
 
-    /* شريط السلة العائم */
+    /* شريط السلة */
     .cart-bar {
       position: fixed;
       bottom: 16px;
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 32px);
-      max-width: 600px;
+      max-width: 620px;
       background: var(--primary-dark);
       color: #fff;
-      padding: 14px 20px;
+      padding: 14px 18px;
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      border: 1.5px solid var(--gold);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
       display: none;
       align-items: center;
       justify-content: space-between;
@@ -264,19 +353,9 @@
       z-index: 100;
     }
 
-    .cart-bar.visible {
-      display: flex;
-    }
-
-    .cart-info {
-      font-size: 0.95rem;
-      font-weight: 600;
-    }
-
-    .cart-actions {
-      display: flex;
-      gap: 8px;
-    }
+    .cart-bar.visible { display: flex; }
+    .cart-info { font-size: 0.92rem; font-weight: 700; }
+    .cart-actions { display: flex; gap: 8px; }
 
     .whatsapp-btn {
       background: #25d366;
@@ -287,12 +366,11 @@
       font-family: inherit;
       font-weight: 700;
       cursor: pointer;
-      text-decoration: none;
       font-size: 0.9rem;
     }
 
     .clear-btn {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.16);
       color: #fff;
       border: none;
       padding: 9px 12px;
@@ -302,32 +380,31 @@
       font-size: 0.85rem;
     }
 
-    .status-msg {
+    .status-msg, .error-box {
       text-align: center;
-      padding: 50px 20px;
-      color: var(--text-muted);
-      font-size: 1.1rem;
+      padding: 40px 20px;
+      border-radius: 14px;
+      background: #fff;
+      margin: 20px 0;
     }
 
     .error-box {
       background: #fef2f2;
-      border: 1px solid #fecaca;
       color: #991b1b;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      margin: 20px 0;
+      border: 1px solid #fecaca;
     }
 
     @media (max-width: 600px) {
-      header h1 { font-size: 1.75rem; }
-      .products-grid { grid-template-columns: 1fr; }
+      header h1 { font-size: 1.7rem; }
+      .category-title { font-size: 1.2rem; }
+      .cart-bar { flex-direction: column; text-align: center; }
     }
   </style>
 </head>
 <body>
 
   <header>
+    <div class="brand-badge">تكفيك وزيادة ✨</div>
     <h1 id="storeName">جاري التحميل...</h1>
     <p id="storeTagline"></p>
   </header>
@@ -338,16 +415,24 @@
         type="text"
         id="searchInput"
         class="search-input"
-        placeholder="🔍 ابحث عن منتج (مثلاً: زيت زيتون، فستق، كركديه...)"
+        placeholder="🔍 ابحث عن أي منتج (عسل سدر، زيت زيتون، زبادي بلدي، كاجو، بن...)"
       />
-      <div class="filter-tabs" id="filterTabs">
-        <button class="filter-btn active" data-category="all">الكل</button>
+
+      <!-- سويبر الأقسام المتحرك -->
+      <div class="swiper categories-swiper">
+        <div class="swiper-wrapper" id="filterTabs">
+          <div class="swiper-slide">
+            <button class="cat-pill active" data-category="all">
+              <span>🛍️ كل الأقسام</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <main id="menuContainer">
-    <div class="status-msg">جاري تحميل قائمة المنتجات...</div>
+    <div class="status-msg">جاري تحميل المنتجات...</div>
   </main>
 
   <div class="cart-bar" id="cartBar">
@@ -358,68 +443,113 @@
     </div>
   </div>
 
+  <!-- مكتبة Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
   <script>
+    // رابط الـ API من GitHub (إذا أزلت المسافة من اسم الملف اجعله kaaf-data.json)
+    const API_URL = 'https://raw.githubusercontent.com/hamzawy-talha/data-api/main/kaaf-data.%20json';
+
     let storeData = null;
     let activeCategory = 'all';
     let cart = [];
-    const API_URL = 'https://raw.githubusercontent.com/hamzawy-talha/data-api/main/kaaf-data.json';
-    // جلب البيانات من ملف JSON الخارجي (API)
-   async function loadMenuData() {
+    let categorySwiper = null;
+    let productSwipers = [];
+    let expandedCategories = {}; // لتتبع الأقسام التي تم فتحها كشبكة كاملة
+
+    async function loadMenuData() {
       try {
         const response = await fetch(`${API_URL}?v=${new Date().getTime()}`);
-        if (!response.ok) {
-          throw new Error('تعذر تحميل ملف البيانات من GitHub');
-        }
+        if (!response.ok) throw new Error('فشل التحميل');
         storeData = await response.json();
         initStore();
       } catch (error) {
         document.getElementById('menuContainer').innerHTML = `
           <div class="error-box">
             <strong>تعذر قراءة البيانات من GitHub!</strong><br>
-            تأكد من صحة اسم الملف في الرابط ومن اتصال الإنترنت، ومن أن صيغة ملف JSON صحيحة بدون أخطاء.
+            تأكد من لصق كود JSON بشكل صحيح داخل ملف <code>kaaf-data. json</code> في مستودعك.
           </div>
         `;
         console.error(error);
       }
     }
 
-
     function initStore() {
       document.title = storeData.storeInfo.name;
       document.getElementById('storeName').textContent = storeData.storeInfo.name;
       document.getElementById('storeTagline').textContent = storeData.storeInfo.tagline;
 
-      // إنشاء أزرار الأقسام
-      const tabsContainer = document.getElementById('filterTabs');
+      const tabsWrapper = document.getElementById('filterTabs');
+
       storeData.categories.forEach(cat => {
-        const btn = document.createElement('button');
-        btn.className = 'filter-btn';
-        btn.dataset.category = cat.id;
-        btn.textContent = `${cat.icon} ${cat.title}`;
-        btn.onclick = () => {
-          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeCategory = cat.id;
-          renderCategories();
-        };
-        tabsContainer.appendChild(btn);
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        slide.innerHTML = `
+          <button class="cat-pill" data-category="${cat.id}">
+            <span>${cat.icon} ${cat.title}</span>
+            <span class="cat-count">${cat.products.length}</span>
+          </button>
+        `;
+        tabsWrapper.appendChild(slide);
       });
 
-      // تفعيل زر الكل
-      tabsContainer.querySelector('[data-category="all"]').onclick = function () {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        activeCategory = 'all';
-        renderCategories();
-      };
+      // تفعيل السويبر العلوي للأقسام
+      categorySwiper = new Swiper('.categories-swiper', {
+        slidesPerView: 'auto',
+        spaceBetween: 10,
+        freeMode: true,
+        grabCursor: true
+      });
 
-      // البحث الفوري
+      // أحداث الضغط على أزرار الأقسام
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeCategory = btn.dataset.category;
+          renderCategories();
+        });
+      });
+
       document.getElementById('searchInput').addEventListener('input', renderCategories);
+      renderCategories();
+    }
 
+    function buildProductCardHTML(product, currency) {
+      const hasPrice = product.price !== null && product.price !== undefined;
+      const priceDisplay = hasPrice
+        ? `${product.price} ${currency}`
+        : (product.priceText || 'تواصل للسعر');
+
+      const safeName = product.name.replace(/'/g, "\\'");
+      const safeUnit = (product.unit || '').replace(/'/g, "\\'");
+
+      return `
+        <div class="product-card">
+          <div>
+            <div class="product-name">${product.name}</div>
+            ${product.unit ? `<span class="product-unit">${product.unit}</span>` : ''}
+          </div>
+          <div class="product-footer">
+            <span class="product-price ${hasPrice ? '' : 'no-price'}">${priceDisplay}</span>
+            <button class="add-btn" onclick="addToCart('${safeName}', '${safeUnit}', ${hasPrice ? product.price : 0})">
+              + أضف
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleCategoryView(catId) {
+      expandedCategories[catId] = !expandedCategories[catId];
       renderCategories();
     }
 
     function renderCategories() {
+      // تدمير السلايدرز القديمة قبل إعادة البناء
+      productSwipers.forEach(s => s.destroy(true, true));
+      productSwipers = [];
+
       const container = document.getElementById('menuContainer');
       const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
       const currency = storeData.storeInfo.currency || 'ج.م';
@@ -438,46 +568,71 @@
         if (filteredProducts.length === 0) return;
         hasResults = true;
 
+        // إذا كان المستخدم يبحث أو ضغط "عرض الكل" نعرض شبكة، وإلا نعرض سلايدر متحرك
+        const isGridMode = searchTerm.length > 0 || expandedCategories[cat.id];
+
         const section = document.createElement('section');
         section.className = 'category-section';
 
         section.innerHTML = `
           <div class="category-header">
-            <h2 class="category-title">
-              <span>${cat.icon}</span>
-              <span>${cat.title}</span>
-            </h2>
-            ${cat.note ? `<span class="category-note">${cat.note}</span>` : ''}
+            <div class="category-title-group">
+              <h2 class="category-title">${cat.icon} ${cat.title}</h2>
+              ${cat.note ? `<span class="category-note">${cat.note}</span>` : ''}
+            </div>
+            ${searchTerm.length === 0 ? `
+              <button class="view-toggle-btn" onclick="toggleCategoryView('${cat.id}')">
+                ${isGridMode ? 'عرض كسلايدر متحرك ◀' : `عرض الكل (${filteredProducts.length})`}
+              </button>
+            ` : ''}
           </div>
-          <div class="products-grid">
-            ${filteredProducts.map(product => {
-              const hasPrice = product.price !== null && product.price !== undefined;
-              const priceDisplay = hasPrice
-                ? `${product.price} ${currency}`
-                : (product.priceText || 'حسب السعر');
-
-              const safeName = product.name.replace(/'/g, "\\'");
-              const safeUnit = (product.unit || '').replace(/'/g, "\\'");
-
-              return `
-                <div class="product-card">
-                  <div>
-                    <div class="product-name">${product.name}</div>
-                    ${product.unit ? `<span class="product-unit">الوزن / العبوة: ${product.unit}</span>` : ''}
-                  </div>
-                  <div class="product-footer">
-                    <span class="product-price ${hasPrice ? '' : 'no-price'}">${priceDisplay}</span>
-                    <button class="add-btn" onclick="addToCart('${safeName}', '${safeUnit}', ${hasPrice ? product.price : 0})">
-                      + أضف للطلب
-                    </button>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
+          ${isGridMode ? `
+            <div class="products-grid">
+              ${filteredProducts.map(p => buildProductCardHTML(p, currency)).join('')}
+            </div>
+          ` : `
+            <div class="swiper products-swiper" id="swiper-${cat.id}">
+              <div class="swiper-wrapper">
+                ${filteredProducts.map(p => `
+                  <div class="swiper-slide">${buildProductCardHTML(p, currency)}</div>
+                `).join('')}
+              </div>
+              <div class="swiper-button-next"></div>
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-pagination"></div>
+            </div>
+          `}
         `;
 
         container.appendChild(section);
+
+        if (!isGridMode) {
+          const swiperInstance = new Swiper(`#swiper-${cat.id}`, {
+            slidesPerView: 1.2,
+            spaceBetween: 14,
+            grabCursor: true,
+            autoplay: {
+              delay: 3200,
+              disableOnInteraction: true,
+              pauseOnMouseEnter: true
+            },
+            pagination: {
+              el: `#swiper-${cat.id} .swiper-pagination`,
+              clickable: true,
+              dynamicBullets: true
+            },
+            navigation: {
+              nextEl: `#swiper-${cat.id} .swiper-button-next`,
+              prevEl: `#swiper-${cat.id} .swiper-button-prev`
+            },
+            breakpoints: {
+              540: { slidesPerView: 2.2, spaceBetween: 14 },
+              820: { slidesPerView: 3.2, spaceBetween: 16 },
+              1080: { slidesPerView: 4, spaceBetween: 16 }
+            }
+          });
+          productSwipers.push(swiperInstance);
+        }
       });
 
       if (!hasResults) {
@@ -513,7 +668,7 @@
       const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
       const currency = storeData.storeInfo.currency || 'ج.م';
 
-      cartInfo.textContent = `الطلب: ${totalQty} منتج • الإجمالي التقديري: ${totalPrice} ${currency}`;
+      cartInfo.textContent = `الطلب: ${totalQty} منتج • الإجمالي: ${totalPrice} ${currency}`;
       cartBar.classList.add('visible');
     }
 
@@ -530,9 +685,7 @@
       });
 
       message += `\n*الإجمالي التقديري:* ${total} ${currency}`;
-
-      const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-      window.open(url, '_blank');
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
     }
 
     loadMenuData();
