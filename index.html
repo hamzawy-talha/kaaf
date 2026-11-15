@@ -362,27 +362,27 @@
     let storeData = null;
     let activeCategory = 'all';
     let cart = [];
-
+    const API_URL = 'https://raw.githubusercontent.com/hamzawy-talha/data-api/main/kaaf-data.json';
     // جلب البيانات من ملف JSON الخارجي (API)
-    async function loadMenuData() {
+   async function loadMenuData() {
       try {
-        // إضافة timestamp لمنع الكاش عند تحديث ملف JSON
-        const response = await fetch('./data.json?v=' + new Date().getTime());
+        const response = await fetch(`${API_URL}?v=${new Date().getTime()}`);
         if (!response.ok) {
-          throw new Error('تعذر تحميل ملف البيانات');
+          throw new Error('تعذر تحميل ملف البيانات من GitHub');
         }
         storeData = await response.json();
         initStore();
       } catch (error) {
         document.getElementById('menuContainer').innerHTML = `
           <div class="error-box">
-            <strong>تعذر قراءة ملف data.json!</strong><br>
-            تأكد من وضع ملف <code>data.json</code> بجانب ملف <code>index.html</code> وتشغيل الموقع عبر سيرفر محلي (مثل Live Server) أو رفعه على استضافة.
+            <strong>تعذر قراءة البيانات من GitHub!</strong><br>
+            تأكد من صحة اسم الملف في الرابط ومن اتصال الإنترنت، ومن أن صيغة ملف JSON صحيحة بدون أخطاء.
           </div>
         `;
         console.error(error);
       }
     }
+
 
     function initStore() {
       document.title = storeData.storeInfo.name;
