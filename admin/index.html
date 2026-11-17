@@ -436,7 +436,7 @@
 <script>
   const SUPABASE_URL = 'https://mbuxmpwqhikfetjorolu.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_URg0qnqfTP2lteDOe9lSHQ_lIFRQXjW';
-
+  const DEFAULT_IMAGE = 'https://mbuxmpwqhikfetjorolu.supabase.co/storage/v1/object/public/images/rated_Image.jpeg';
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
   let categories = [];
@@ -670,8 +670,24 @@
       const file = document.getElementById('prod-image-file').files[0];
       const urlInput = document.getElementById('prod-image-url').value.trim();
 
-      let image = urlInput || null;
+      let image = urlInput || DEFAULT_IMAGE;
       if (file) image = await uploadImage(file);
+
+      const payload = {
+        name: document.getElementById('prod-name').value.trim(),
+        category_id: document.getElementById('prod-category').value,
+        price: document.getElementById('prod-price').value ? parseFloat(document.getElementById('prod-price').value) : null,
+        weight: document.getElementById('prod-weight').value.trim(),
+        image: image
+      };
+
+      const payload = {
+        name: document.getElementById('prod-name').value.trim(),
+        category_id: document.getElementById('prod-category').value,
+        price: document.getElementById('prod-price').value ? parseFloat(document.getElementById('prod-price').value) : null,
+        weight: document.getElementById('prod-weight').value.trim(),
+        image: image
+      };
 
       const payload = {
         name: document.getElementById('prod-name').value.trim(),
