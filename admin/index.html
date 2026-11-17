@@ -276,17 +276,25 @@
     <h2>لوحة تحكم متجر كاف</h2>
     <p>سجّل الدخول بحساب الأدمن لإدارة الأقسام والمنتجات</p>
 
-    <form class="login-form" id="login-form">
+  <form class="login-form" id="login-form" onsubmit="event.preventDefault(); handleLogin(); return false;">
       <div class="login-error" id="login-error"></div>
       <div>
         <label>البريد الإلكتروني</label>
-        <input type="email" id="login-email" placeholder="admin@kaaf.com" required />
+        <input
+          type="email"
+          id="login-email"
+          placeholder="admin@kaaf.com"
+          autocapitalize="none"
+          autocorrect="off"
+          autocomplete="email"
+          required
+        />
       </div>
       <div>
         <label>كلمة المرور</label>
         <input type="password" id="login-password" placeholder="••••••••" required />
       </div>
-      <button type="submit" class="login-btn" id="login-btn">دخول للوحة التحكم 🔐</button>
+      <button type="button" class="login-btn" id="login-btn" onclick="handleLogin()">دخول للوحة التحكم 🔐</button>
     </form>
   </div>
 </div>
@@ -471,29 +479,45 @@
   }
 
   // تسجيل الدخول
-  document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
+async function handleLogin() {
     const btn = document.getElementById('login-btn');
     const errBox = document.getElementById('login-error');
-    errBox.style.display = 'none';
-    btn.disabled = true;
-    btn.textContent = 'جاري التحقق...';
-
     const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
 
-    const { error } = await db.auth.signInWithPassword({ email, password });
+    errBox.style.display = 'none';
 
-    if (error) {
-      errBox.textContent = '❌ البريد الإلكتروني أو كلمة المرور غير صحيحة';
+    if (!email || !password) {
+      errBox.textContent = '⚠️ اكتب البريد الإلكتروني وكلمة المرور أولاً';
       errBox.style.display = 'block';
-    } else {
-      e.target.reset();
+      return;
     }
 
-    btn.disabled = false;
-    btn.textContent = 'دخول للوحة التحكم 🔐';
-  });
+    if (typeof db === 'undefined' || !db) {
+      errBox.textContent = '⚠️ لم يتم الاتصال بـ Supabase، تأكد من اتصال الإنترنت وأعد تحميل الصفحة.';
+      errBox.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'جاري التحقق...';
+
+    try {
+      const { error } = await db.auth.signInWithPassword({ email, password });
+      if (error) {
+        errBox.textContent = '❌ ' + error.message;
+        errBox.style.display = 'block';
+      } else {
+        document.getElementById('login-form').reset();
+      }
+    } catch (err) {
+      errBox.textContent = '❌ خطأ في الاتصال: ' + err.message;
+      errBox.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'دخول للوحة التحكم 🔐';
+    }
+  }
 
   // تسجيل الخروج
   async function logout() {
