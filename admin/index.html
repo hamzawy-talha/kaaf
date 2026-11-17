@@ -4,116 +4,628 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>لوحة تحكم متجر كاف</title>
-  <!-- استدعاء مكتبة Supabase SDK -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; background: #f4f6f4; color: #222; margin: 0; padding: 20px; }
-    .container { max-width: 900px; margin: auto; display: grid; gap: 20px; }
-    .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    h2 { margin-top: 0; color: #3E4A32; border-bottom: 2px solid #C89D54; padding-bottom: 8px; }
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-    input, select, button { padding: 10px 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; }
-    button { background: #3E4A32; color: #fff; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { background: #2d3624; }
-    button:disabled { background: #999; cursor: not-allowed; }
-    .btn-danger { background: #c0392b; padding: 6px 10px; font-size: 13px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { text-align: right; padding: 10px; border-bottom: 1px solid #eee; }
-    img.thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; }
-    .status { margin-top: 10px; font-weight: bold; color: #2e7d32; }
+    :root {
+      --olive: #4F5830;
+      --olive-dark: #384020;
+      --teal: #13505B;
+      --gold: #C49A45;
+      --cream: #EAE2CC;
+      --bg: #FAF7F0;
+      --border: #E5DEC9;
+      --danger: #c0392b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: #1E2418;
+      padding: 20px;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* الهيدر */
+    .topbar {
+      background: linear-gradient(135deg, var(--teal), var(--olive));
+      color: #fff;
+      padding: 20px 24px;
+      border-radius: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 24px rgba(19, 80, 91, 0.15);
+    }
+
+    .topbar h1 { font-size: 1.4rem; font-weight: 800; }
+    .conn-status {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* الزرارين الرئيسيين */
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .tab-btn {
+      background: #fff;
+      border: 2px solid var(--border);
+      padding: 18px;
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--olive-dark);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .tab-btn:hover { border-color: var(--teal); color: var(--teal); }
+    .tab-btn.active {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal);
+      box-shadow: 0 8px 20px rgba(19, 80, 91, 0.22);
+    }
+
+    .tab-count {
+      background: rgba(0, 0, 0, 0.1);
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+    }
+    .tab-btn.active .tab-count { background: rgba(255, 255, 255, 0.22); }
+
+    /* الصفحات */
+    .view-panel { display: none; }
+    .view-panel.active { display: block; }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--bg);
+    }
+
+    .panel-header h2 { font-size: 1.25rem; color: var(--teal); font-weight: 800; }
+
+    .btn-add {
+      background: var(--olive);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+    .btn-add:hover { background: var(--teal); }
+
+    /* أدوات البحث والفلترة */
+    .filters-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .filters-row input, .filters-row select {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      outline: none;
+      background: #FCFBF8;
+    }
+    .filters-row input { flex: 1; min-width: 220px; }
+
+    /* الجداول والقوائم */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 550px; }
+    th, td {
+      text-align: right;
+      padding: 12px 10px;
+      border-bottom: 1px solid #f0ece1;
+      font-size: 0.94rem;
+      vertical-align: middle;
+    }
+    th { background: #FAF7F0; color: var(--olive-dark); font-weight: 800; }
+    tr:hover td { background: #FCFBF8; }
+
+    img.thumb {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--cream);
+    }
+
+    .actions-cell { display: flex; gap: 6px; }
+    .btn-edit, .btn-delete {
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #fff;
+    }
+    .btn-edit { background: var(--teal); }
+    .btn-edit:hover { opacity: 0.9; }
+    .btn-delete { background: var(--danger); }
+    .btn-delete:hover { opacity: 0.9; }
+
+    /* النوافذ المنبثقة (Modal) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 200;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: #fff;
+      width: 100%;
+      max-width: 480px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-head {
+      background: var(--teal);
+      color: #fff;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-head h3 { font-size: 1.1rem; font-weight: 800; }
+    .close-modal {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .modal-body { padding: 20px; display: grid; gap: 14px; max-height: 80vh; overflow-y: auto; }
+    .field label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 5px; color: var(--olive-dark); }
+    .field input, .field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .field input:focus, .field select:focus { border-color: var(--teal); }
+
+    .btn-save {
+      width: 100%;
+      padding: 12px;
+      background: var(--olive);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-save:hover { background: var(--teal); }
+    .btn-save:disabled { background: #999; cursor: not-allowed; }
+
+    .empty-msg { text-align: center; padding: 30px; color: #777; font-weight: 600; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- 1. إضافة قسم جديد -->
-  <div class="card">
-    <h2>1. إضافة قسم جديد (Categories)</h2>
-    <form id="category-form" class="form-grid">
-      <input type="text" id="cat-name" placeholder="اسم القسم (مثلاً: عسل نحل)" required />
-      <input type="text" id="cat-slug" placeholder="الكود بالإنجليزي (مثلاً: honey)" required />
-      <input type="number" id="cat-sort" placeholder="الترتيب (مثلاً: 1)" value="0" />
-      <button type="submit">حفظ القسم</button>
-    </form>
-    <div id="cat-status" class="status"></div>
+  <!-- الهيدر -->
+  <div class="topbar">
+    <h1>🌿 لوحة تحكم متجر كاف</h1>
+    <span class="conn-status" id="conn-status">جاري الاتصال بـ Supabase...</span>
   </div>
 
-  <!-- 2. إضافة منتج جديد -->
-  <div class="card">
-    <h2>2. إضافة منتج جديد (Products)</h2>
-    <form id="product-form" class="form-grid">
-      <input type="text" id="prod-name" placeholder="اسم المنتج" required />
-      <select id="prod-category" required>
-        <option value="">-- اختر القسم --</option>
-      </select>
-      <input type="number" step="0.01" id="prod-price" placeholder="السعر (ج.م)" required />
-      <input type="text" id="prod-weight" placeholder="الوزن (مثلاً: 1 كجم / 250 جم)" />
-      <input type="file" id="prod-image" accept="image/*" />
-      <button type="submit" id="prod-submit-btn">حفظ المنتج</button>
-    </form>
-    <div id="prod-status" class="status"></div>
+  <!-- الزرارين الرئيسيين -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" id="tab-btn-categories" onclick="switchTab('categories')">
+      <span>📁 الأقسام</span>
+      <span class="tab-count" id="cats-count">0</span>
+    </button>
+    <button class="tab-btn" id="tab-btn-products" onclick="switchTab('products')">
+      <span>📦 المنتجات</span>
+      <span class="tab-count" id="prods-count">0</span>
+    </button>
   </div>
 
-  <!-- 3. عرض المنتجات الحالية -->
-  <div class="card">
-    <h2>المنتجات المضافة حالياً</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>الصورة</th>
-          <th>المنتج</th>
-          <th>القسم</th>
-          <th>الوزن</th>
-          <th>السعر</th>
-          <th>إجراء</th>
-        </tr>
-      </thead>
-      <tbody id="products-table"></tbody>
-    </table>
+  <!-- صفحة 1: الأقسام -->
+  <div class="view-panel active" id="panel-categories">
+    <div class="card">
+      <div class="panel-header">
+        <h2>قائمة الأقسام</h2>
+        <button class="btn-add" onclick="openCategoryModal()">+ إضافة قسم جديد</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>الترتيب</th>
+              <th>اسم القسم</th>
+              <th>الكود (Slug)</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="categories-tbody">
+            <tr><td colspan="4" class="empty-msg">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- صفحة 2: المنتجات -->
+  <div class="view-panel" id="panel-products">
+    <div class="card">
+      <div class="panel-header">
+        <h2>قائمة المنتجات</h2>
+        <button class="btn-add" onclick="openProductModal()">+ إضافة منتج جديد</button>
+      </div>
+
+      <div class="filters-row">
+        <input type="text" id="prod-search" placeholder="🔍 ابحث عن اسم المنتج..." oninput="renderProductsTable()" />
+        <select id="prod-filter-cat" onchange="renderProductsTable()">
+          <option value="all">كل الأقسام</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>الصورة</th>
+              <th>اسم المنتج</th>
+              <th>القسم</th>
+              <th>الوزن</th>
+              <th>السعر</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody">
+            <tr><td colspan="6" class="empty-msg">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة إضافة / تعديل قسم -->
+<div class="modal-overlay" id="cat-modal" onclick="if(event.target===this) closeModal('cat-modal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="cat-modal-title">إضافة قسم جديد</h3>
+      <button class="close-modal" onclick="closeModal('cat-modal')">✕</button>
+    </div>
+    <form class="modal-body" id="cat-form">
+      <input type="hidden" id="cat-id" />
+      <div class="field">
+        <label>اسم القسم</label>
+        <input type="text" id="cat-name" placeholder="مثلاً: عسل النحل الطبيعي" required />
+      </div>
+      <div class="field">
+        <label>الكود بالإنجليزي (Slug)</label>
+        <input type="text" id="cat-slug" placeholder="مثلاً: honey" required />
+      </div>
+      <div class="field">
+        <label>رقم الترتيب</label>
+        <input type="number" id="cat-sort" value="0" />
+      </div>
+      <button type="submit" class="btn-save" id="cat-save-btn">حفظ القسم</button>
+    </form>
+  </div>
+</div>
+
+<!-- نافذة إضافة / تعديل منتج -->
+<div class="modal-overlay" id="prod-modal" onclick="if(event.target===this) closeModal('prod-modal')">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="prod-modal-title">إضافة منتج جديد</h3>
+      <button class="close-modal" onclick="closeModal('prod-modal')">✕</button>
+    </div>
+    <form class="modal-body" id="prod-form">
+      <input type="hidden" id="prod-id" />
+      <div class="field">
+        <label>اسم المنتج</label>
+        <input type="text" id="prod-name" placeholder="مثلاً: عسل سدر جبلي" required />
+      </div>
+      <div class="field">
+        <label>القسم</label>
+        <select id="prod-category" required>
+          <option value="">-- اختر القسم --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>السعر (ج.م)</label>
+        <input type="number" step="0.01" id="prod-price" placeholder="مثلاً: 300" required />
+      </div>
+      <div class="field">
+        <label>الوزن / العبوة</label>
+        <input type="text" id="prod-weight" placeholder="مثلاً: 1 كجم / ¼ لتر" />
+      </div>
+      <div class="field">
+        <label>رفع صورة من جهازك</label>
+        <input type="file" id="prod-image-file" accept="image/*" />
+      </div>
+      <div class="field">
+        <label>أو رابط صورة جاهز (اختياري)</label>
+        <input type="url" id="prod-image-url" placeholder="https://..." />
+      </div>
+      <button type="submit" class="btn-save" id="prod-save-btn">حفظ المنتج</button>
+    </form>
   </div>
 </div>
 
 <script>
-  // === إعدادات الربط مع مشروعك ===
+  // === ضع هنا مفتاح Publishable key من Supabase (الذي يبدأ بـ sb_publishable_...) ===
   const SUPABASE_URL = 'https://mbuxmpwqhikfetjorolu.supabase.co';
-  const SUPABASE_ANON_KEY = 'ضع_هنا_مفتاح_ANON_PUBLIC_KEY_الخاص_بك';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_URg0qnqfTP2lteDOe9lSHQ_lIFRQXjW';
 
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-  // تحميل الأقسام في القائمة المنسدلة
+  let categories = [];
+  let products = [];
+  let categoriesMap = {};
+
+  // التبديل بين صفحة الأقسام والمنتجات
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+
+    document.getElementById(`tab-btn-${tab}`).classList.add('active');
+    document.getElementById(`panel-${tab}`).classList.add('active');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+  }
+
+  // ========================
+  // 1. إدارة الأقسام
+  // ========================
   async function loadCategories() {
     const { data, error } = await db
       .from('categories')
       .select('*')
       .order('sort', { ascending: true });
 
-    if (error) return console.error('خطأ في جلب الأقسام:', error.message);
+    if (error) {
+      document.getElementById('conn-status').textContent = '❌ خطأ في الاتصال';
+      console.error(error);
+      return;
+    }
 
-    const select = document.getElementById('prod-category');
-    select.innerHTML = '<option value="">-- اختر القسم --</option>';
-    data.forEach(cat => {
-      select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+    document.getElementById('conn-status').textContent = '✅ متصل بقاعدة البيانات';
+    categories = data || [];
+    categoriesMap = {};
+    document.getElementById('cats-count').textContent = categories.length;
+
+    const prodCatSelect = document.getElementById('prod-category');
+    const filterSelect = document.getElementById('prod-filter-cat');
+    prodCatSelect.innerHTML = '<option value="">-- اختر القسم --</option>';
+    filterSelect.innerHTML = '<option value="all">كل الأقسام</option>';
+
+    categories.forEach(cat => {
+      categoriesMap[String(cat.id)] = cat.name;
+      prodCatSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+      filterSelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
     });
+
+    const tbody = document.getElementById('categories-tbody');
+    if (categories.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-msg">لا توجد أقسام بعد. اضغط على "+ إضافة قسم جديد"</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = categories.map(cat => `
+      <tr>
+        <td>${cat.sort ?? 0}</td>
+        <td><strong>${cat.name}</strong></td>
+        <td><code>${cat.slug || '-'}</code></td>
+        <td>
+          <div class="actions-cell">
+            <button class="btn-edit" onclick="openCategoryModal('${cat.id}')">✏️ تعديل</button>
+            <button class="btn-delete" onclick="deleteCategory('${cat.id}')">🗑️ حذف</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
   }
 
-  // إضافة قسم جديد
-  document.getElementById('category-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('cat-name').value.trim();
-    const slug = document.getElementById('cat-slug').value.trim();
-    const sort = parseInt(document.getElementById('cat-sort').value) || 0;
+  function openCategoryModal(id = null) {
+    document.getElementById('cat-form').reset();
+    document.getElementById('cat-id').value = '';
 
-    const { error } = await db.from('categories').insert([{ name, slug, sort }]);
-    if (error) {
-      alert('خطأ: ' + error.message);
+    if (id) {
+      const cat = categories.find(c => String(c.id) === String(id));
+      if (cat) {
+        document.getElementById('cat-modal-title').textContent = '✏️ تعديل القسم';
+        document.getElementById('cat-id').value = cat.id;
+        document.getElementById('cat-name').value = cat.name || '';
+        document.getElementById('cat-slug').value = cat.slug || '';
+        document.getElementById('cat-sort').value = cat.sort ?? 0;
+      }
     } else {
-      document.getElementById('cat-status').textContent = 'تم إضافة القسم بنجاح!';
-      e.target.reset();
-      loadCategories();
+      document.getElementById('cat-modal-title').textContent = '+ إضافة قسم جديد';
+    }
+
+    document.getElementById('cat-modal').classList.add('open');
+  }
+
+  document.getElementById('cat-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('cat-save-btn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ...';
+
+    const editId = document.getElementById('cat-id').value;
+    const payload = {
+      name: document.getElementById('cat-name').value.trim(),
+      slug: document.getElementById('cat-slug').value.trim(),
+      sort: parseInt(document.getElementById('cat-sort').value) || 0
+    };
+
+    try {
+      const res = editId
+        ? await db.from('categories').update(payload).eq('id', editId)
+        : await db.from('categories').insert([payload]);
+
+      if (res.error) throw res.error;
+
+      closeModal('cat-modal');
+      await loadCategories();
+      renderProductsTable();
+    } catch (err) {
+      alert('خطأ: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'حفظ القسم';
     }
   });
 
-  // دالة رفع الصورة لـ Bucket اسمه images وإرجاع اللينك
+  async function deleteCategory(id) {
+    if (!confirm('هل أنت متأكد من حذف هذا القسم؟')) return;
+    const { error } = await db.from('categories').delete().eq('id', id);
+    if (error) {
+      alert('تعذر الحذف (تأكد من حذف المنتجات المرتبطة بالقسم أولاً): ' + error.message);
+    } else {
+      await loadCategories();
+      await loadProducts();
+    }
+  }
+
+  // ========================
+  // 2. إدارة المنتجات
+  // ========================
+  async function loadProducts() {
+    const { data, error } = await db
+      .from('products')
+      .select('*')
+      .order('id', { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    products = data || [];
+    document.getElementById('prods-count').textContent = products.length;
+    renderProductsTable();
+  }
+
+  function renderProductsTable() {
+    const search = document.getElementById('prod-search').value.trim().toLowerCase();
+    const catFilter = document.getElementById('prod-filter-cat').value;
+
+    const filtered = products.filter(p => {
+      const matchName = (p.name || '').toLowerCase().includes(search);
+      const matchCat = catFilter === 'all' || String(p.category_id) === String(catFilter);
+      return matchName && matchCat;
+    });
+
+    const tbody = document.getElementById('products-tbody');
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-msg">لا توجد منتجات حالياً.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(p => `
+      <tr>
+        <td>${p.image ? `<img src="${p.image}" class="thumb" />` : '—'}</td>
+        <td><strong>${p.name}</strong></td>
+        <td>${categoriesMap[String(p.category_id)] || '-'}</td>
+        <td>${p.weight || '-'}</td>
+        <td><strong>${p.price} ج.م</strong></td>
+        <td>
+          <div class="actions-cell">
+            <button class="btn-edit" onclick="openProductModal('${p.id}')">✏️ تعديل</button>
+            <button class="btn-delete" onclick="deleteProduct('${p.id}')">🗑️ حذف</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function openProductModal(id = null) {
+    document.getElementById('prod-form').reset();
+    document.getElementById('prod-id').value = '';
+
+    if (id) {
+      const p = products.find(item => String(item.id) === String(id));
+      if (p) {
+        document.getElementById('prod-modal-title').textContent = '✏️ تعديل المنتج';
+        document.getElementById('prod-id').value = p.id;
+        document.getElementById('prod-name').value = p.name || '';
+        document.getElementById('prod-category').value = p.category_id || '';
+        document.getElementById('prod-price').value = p.price ?? '';
+        document.getElementById('prod-weight').value = p.weight || '';
+        document.getElementById('prod-image-url').value = p.image || '';
+      }
+    } else {
+      document.getElementById('prod-modal-title').textContent = '+ إضافة منتج جديد';
+    }
+
+    document.getElementById('prod-modal').classList.add('open');
+  }
+
   async function uploadImage(file) {
     if (!file) return null;
     const cleanName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
@@ -126,73 +638,59 @@
     return data.publicUrl;
   }
 
-  // إضافة منتج جديد
-  document.getElementById('product-form').addEventListener('submit', async (e) => {
+  document.getElementById('prod-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = document.getElementById('prod-submit-btn');
-    const status = document.getElementById('prod-status');
+    const btn = document.getElementById('prod-save-btn');
     btn.disabled = true;
-    status.textContent = 'جاري الرفع والحفظ...';
+    btn.textContent = 'جاري الحفظ...';
 
     try {
-      const file = document.getElementById('prod-image').files[0];
-      const image_url = await uploadImage(file);
+      const editId = document.getElementById('prod-id').value;
+      const file = document.getElementById('prod-image-file').files[0];
+      const urlInput = document.getElementById('prod-image-url').value.trim();
 
-      const productData = {
+      let image = urlInput || null;
+      if (file) {
+        image = await uploadImage(file);
+      }
+
+      const payload = {
         name: document.getElementById('prod-name').value.trim(),
-        category_id: parseInt(document.getElementById('prod-category').value),
+        category_id: document.getElementById('prod-category').value,
         price: parseFloat(document.getElementById('prod-price').value),
-        weight: document.getElementById('prod-weight').value.trim(),
-        image_url: image_url
+        weight: document.getElementById('prod-weight').value.trim()
       };
 
-      const { error } = await db.from('products').insert([productData]);
-      if (error) throw error;
+      if (image !== null) payload.image = image;
 
-      status.textContent = 'تم حفظ المنتج بنجاح!';
-      e.target.reset();
-      loadProducts();
+      const res = editId
+        ? await db.from('products').update(payload).eq('id', editId)
+        : await db.from('products').insert([payload]);
+
+      if (res.error) throw res.error;
+
+      closeModal('prod-modal');
+      await loadProducts();
     } catch (err) {
-      alert(err.message);
-      status.textContent = '';
+      alert('خطأ: ' + err.message);
     } finally {
       btn.disabled = false;
+      btn.textContent = 'حفظ المنتج';
     }
   });
 
-  // عرض المنتجات مع اسم القسم المرتبط بيها (Relational Join)
-  async function loadProducts() {
-    const { data, error } = await db
-      .from('products')
-      .select('*, categories(name)')
-      .order('id', { ascending: false });
-
-    if (error) return console.error('خطأ في جلب المنتجات:', error.message);
-
-    const tbody = document.getElementById('products-table');
-    tbody.innerHTML = data.map(p => `
-      <tr>
-        <td>${p.image_url ? `<img src="${p.image_url}" class="thumb" />` : 'بدون صورة'}</td>
-        <td>${p.name}</td>
-        <td>${p.categories ? p.categories.name : '-'}</td>
-        <td>${p.weight || '-'}</td>
-        <td>${p.price} ج.م</td>
-        <td><button class="btn-danger" onclick="deleteProduct(${p.id})">حذف</button></td>
-      </tr>
-    `).join('');
-  }
-
-  // حذف منتج
   async function deleteProduct(id) {
-    if (!confirm('متأكد إنك عاوز تحذف المنتج ده؟')) return;
+    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
     const { error } = await db.from('products').delete().eq('id', id);
-    if (error) alert(error.message);
-    else loadProducts();
+    if (error) alert('خطأ: ' + error.message);
+    else await loadProducts();
   }
 
-  // تشغيل عند فتح الصفحة
-  loadCategories();
-  loadProducts();
+  // تشغيل مبدئي
+  (async function init() {
+    await loadCategories();
+    await loadProducts();
+  })();
 </script>
 
 </body>
