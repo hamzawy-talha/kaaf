@@ -676,12 +676,16 @@
     }
     document.getElementById('prod-modal').classList.add('open');
   }
-
-  async function uploadImage(file) {
+async function uploadImage(file) {
     if (!file) return null;
-    const cleanName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
-    const fileName = `${Date.now()}-${cleanName}`;
-    const { error } = await db.storage.from('images').upload(fileName, file);
+    const ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+    const fileName = `prod-${Date.now()}-${Math.floor(Math.random() * 1000)}.${ext}`;
+
+    const { error } = await db.storage.from('images').upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
     if (error) throw new Error('فشل رفع الصورة: ' + error.message);
     return db.storage.from('images').getPublicUrl(fileName).data.publicUrl;
   }
