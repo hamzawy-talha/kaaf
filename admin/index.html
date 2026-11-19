@@ -366,6 +366,7 @@
                 <th>القسم</th>
                 <th>الوزن</th>
                 <th>السعر</th>
+              
                 <th>الإجراءات</th>
               </tr>
             </thead>
@@ -423,6 +424,10 @@
       <div class="field">
         <label>السعر (ج.م) — اتركه فارغاً لو تواصل للسعر</label>
         <input type="number" step="0.01" id="prod-price" />
+      </div>
+      <div class="field">
+        <label>السعر القديم قبل الخصم (اختياري — لو في خصم)</label>
+        <input type="number" step="0.01" id="prod-old-price" placeholder="مثلاً: 390" />
       </div>
       <div class="field">
         <label>الوزن / العبوة</label>
@@ -668,6 +673,7 @@
         document.getElementById('prod-name').value = p.name || '';
         document.getElementById('prod-category').value = p.category_id || '';
         document.getElementById('prod-price').value = p.price ?? '';
+        document.getElementById('prod-old-price').value = p.old_price ?? '';
         document.getElementById('prod-weight').value = p.weight || '';
         document.getElementById('prod-image-url').value = p.image || '';
       }
