@@ -42,6 +42,7 @@ async function loadMenuData() {
         .filter(p => String(p.category_id) === String(cat.id))
         .map(p => ({
           _id: `p_${p.id}`,
+          dbId: p.id,
           name: p.name,
           unit: p.weight || '',
           price: p.price,
@@ -71,7 +72,7 @@ async function loadMenuData() {
         products: offerProducts
       });
     }
-
+    checkSharedProduct();
     initStore();
   } catch (error) {
     document.getElementById('menuContainer').innerHTML = `
@@ -163,15 +164,21 @@ function buildProductCardHTML(product, currency) {
 
   return `
     <div class="product-card" data-pid="${product._id}">
-      <div class="product-img-wrap">
-        ${hasDiscount && discountPercent > 0 ? `<span class="discount-badge">خصم ${discountPercent}% 🔥</span>` : ''}
-        <img
-          src="${product.image}"
-          alt="${product.name}"
-          loading="lazy"
-          onerror="this.src='${STORE_CONFIG.defaultImage}'"
-        />
-      </div>
+      <div class="product-img-wrap" onclick="openProductDetails('${product._id}')" style="cursor:pointer;">
+     ${hasDiscount && discountPercent > 0 ? `<span class="discount-badge">خصم ${discountPercent}% 🔥</span>` : ''}
+     <button
+       type="button"
+       class="share-btn-card"
+       title="مشاركة المنتج"
+       onclick="shareProduct('${product._id}', event)"
+     >🔗</button>
+     <img
+       src="${product.image}"
+       alt="${product.name}"
+       loading="lazy"
+       onerror="this.src='${STORE_CONFIG.defaultImage}'"
+     />
+   </div>
       <div class="product-info">
         <div class="product-name">${product.name}</div>
         ${product.unit ? `<span class="product-unit">${product.unit}</span>` : ''}
