@@ -401,7 +401,27 @@
       background: var(--cream);
       border: 1px solid #ede6d4;
     }
-
+.product-img-wrap { position: relative; }
+    .discount-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #c0392b;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      z-index: 2;
+    }
+    .price-box { display: flex; flex-direction: column; line-height: 1.2; }
+    .old-price {
+      font-size: 0.82rem;
+      color: #9ca3af;
+      text-decoration: line-through;
+      font-weight: 600;
+    }
     .product-img-wrap img {
       width: 100%;
       height: 100%;
@@ -816,6 +836,7 @@
               name: p.name,
               unit: p.weight || '',
               price: p.price,
+              oldPrice: p.old_price,
               priceText: p.price_text || 'تواصل للسعر',
               image: p.image || STORE_CONFIG.defaultImage
             }))
@@ -884,9 +905,19 @@
 
     function buildProductCardHTML(product, currency) {
       const hasPrice = product.price !== null && product.price !== undefined;
-      const priceDisplay = hasPrice
-        ? `${product.price} ${currency}`
-        : (product.priceText || 'تواصل للسعر');
+      const hasDiscount = hasPrice && product.oldPrice && Number(product.oldPrice) > Number(product.price);
+      const discountPercent = hasDiscount
+        ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+        : 0;
+
+      const priceHTML = hasPrice
+        ? `
+          <div class="price-box">
+            ${hasDiscount ? `<span class="old-price">${product.oldPrice} ${currency}</span>` : ''}
+            <span class="product-price">${product.price} ${currency}</span>
+          </div>
+        `
+        : `<span class="product-price no-price">${product.priceText || 'تواصل للسعر'}</span>`;
 
       const inCart = cart.find(item => item.id === product._id);
 
@@ -903,6 +934,7 @@
       return `
         <div class="product-card" data-pid="${product._id}">
           <div class="product-img-wrap">
+            ${hasDiscount && discountPercent > 0 ? `<span class="discount-badge">خصم ${discountPercent}% 🔥</span>` : ''}
             <img
               src="${product.image}"
               alt="${product.name}"
@@ -915,13 +947,12 @@
             ${product.unit ? `<span class="product-unit">${product.unit}</span>` : ''}
           </div>
           <div class="product-footer">
-            <span class="product-price ${hasPrice ? '' : 'no-price'}">${priceDisplay}</span>
+            ${priceHTML}
             <div class="card-action" id="action-${product._id}">${actionHTML}</div>
           </div>
         </div>
       `;
     }
-
     function refreshProductButtons(pid) {
       const inCart = cart.find(item => item.id === pid);
       const html = inCart
