@@ -283,8 +283,20 @@
       padding: 1px 8px;
       border-radius: 999px;
     }
-    .cat-pill.active .cat-count { background: rgba(255, 255, 255, 0.22); }
-
+    .cat-pill.active .cat-count { background: rgba(255, 255, 255, 0.22); 
+                                
+.category-section.offers-section {
+      background: linear-gradient(135deg, #fffdf7 0%, #fef4dc 100%);
+      border: 2px solid var(--gold);
+      box-shadow: 0 8px 26px rgba(196, 154, 69, 0.16);
+    }
+    .offers-section .category-title {
+      color: #9a3412;
+    }
+    .offers-section .category-note {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
     /* الأقسام والمنتجات */
     main { max-width: 1220px; margin: 0 auto; padding: 0 16px 40px; }
 
@@ -841,7 +853,26 @@
               image: p.image || STORE_CONFIG.defaultImage
             }))
         }));
+// تجميع كل المنتجات التي عليها خصم تلقائياً في قسم خاص بأعلى الصفحة
+        const offerProducts = [];
+        categoriesData.forEach(cat => {
+          cat.products.forEach(p => {
+            if (p.price !== null && p.oldPrice && Number(p.oldPrice) > Number(p.price)) {
+              offerProducts.push(p);
+            }
+          });
+        });
 
+        if (offerProducts.length > 0) {
+          categoriesData.unshift({
+            id: 'offers',
+            isOffers: true,
+            title: 'عروض وخصومات كاف',
+            icon: '🔥',
+            note: 'وفّر أكثر • عروض متجددة لفترة محدودة',
+            products: offerProducts
+          });
+        }
         initStore();
       } catch (error) {
         document.getElementById('menuContainer').innerHTML = `
