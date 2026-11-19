@@ -120,7 +120,42 @@
       </div>
     </div>
   </div>
+<!-- نافذة عرض تفاصيل المنتج عند فتح رابط المشاركة -->
+  <div class="modal-overlay" id="productModalOverlay" onclick="if(event.target===this) closeProductModal()">
+    <div class="product-modal">
+      <button class="close-prod-modal" onclick="closeProductModal()">✕</button>
+      <div id="productModalContent"></div>
+    </div>
+  </div>
 
+  <!-- نافذة المشاركة (للكمبيوتر أو عند عدم دعم المشاركة التلقائية) -->
+  <div class="modal-overlay" id="shareModalOverlay" onclick="if(event.target===this) closeShareModal()">
+    <div class="share-modal">
+      <div class="share-modal-head">
+        <h3>🔗 مشاركة المنتج</h3>
+        <button class="close-drawer" onclick="closeShareModal()">✕</button>
+      </div>
+      <div class="share-modal-body" id="shareModalBody"></div>
+    </div>
+  </div>
+  <!-- نافذة عرض تفاصيل المنتج عند فتح رابط المشاركة -->
+  <div class="modal-overlay" id="productModalOverlay" onclick="if(event.target===this) closeProductModal()">
+    <div class="product-modal">
+      <button class="close-prod-modal" onclick="closeProductModal()">✕</button>
+      <div id="productModalContent"></div>
+    </div>
+  </div>
+
+  <!-- نافذة المشاركة (للكمبيوتر أو عند عدم دعم المشاركة التلقائية) -->
+  <div class="modal-overlay" id="shareModalOverlay" onclick="if(event.target===this) closeShareModal()">
+    <div class="share-modal">
+      <div class="share-modal-head">
+        <h3>🔗 مشاركة المنتج</h3>
+        <button class="close-drawer" onclick="closeShareModal()">✕</button>
+      </div>
+      <div class="share-modal-body" id="shareModalBody"></div>
+    </div>
+  </div>
   <!-- مكتبات JS وملف السكربت الخاص بنا -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
