@@ -1031,7 +1031,7 @@
         const isGridMode = searchTerm.length > 0 || expandedCategories[cat.id] || activeCategory !== 'all';
 
         const section = document.createElement('section');
-        section.className = 'category-section';
+        section.className = cat.isOffers ? 'category-section offers-section' : 'category-section';
 
         section.innerHTML = `
           <div class="category-header">
