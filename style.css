@@ -557,18 +557,87 @@ main { max-width: 1220px; margin: 0 auto; padding: 0 16px 40px; }
 .drawer-body { flex: 1; overflow-y: auto; padding: 18px; background: #FAF7F0; }
 
 .cart-item {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.cart-item-info strong { display: block; font-size: 0.95rem; color: var(--text); }
-.cart-item-info
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .cart-item-info strong { display: block; font-size: 0.95rem; color: var(--text); }
+    .cart-item-info span { font-size: 0.8rem; color: var(--text-muted); }
+
+    .customer-fields {
+      margin-top: 16px;
+      background: #fff;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .customer-fields input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      outline: none;
+    }
+    .customer-fields input:focus { border-color: var(--teal); }
+
+    .drawer-footer { padding: 16px 20px; background: #fff; border-top: 1px solid var(--border); }
+
+    .drawer-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--olive-dark);
+    }
+
+    .send-wa-btn {
+      width: 100%;
+      background: #25d366;
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* الفوتر */
+    footer {
+      background: var(--olive-dark);
+      color: var(--cream);
+      text-align: center;
+      padding: 34px 20px 90px;
+      border-top: 4px solid var(--gold);
+    }
+    footer h4 { font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    footer p { font-size: 0.9rem; opacity: 0.88; max-width: 550px; margin: 0 auto; }
+
+    .status-msg, .error-box {
+      text-align: center;
+      padding: 40px 20px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid var(--border);
+    }
+
+    .error-box { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+
 /* زر الشير على بطاقة المنتج */
 .share-btn-card {
   position: absolute;
@@ -685,3 +754,9 @@ main { max-width: 1220px; margin: 0 auto; padding: 0 16px 40px; }
 .sh-fb { background: #1877f2; }
 .sh-tg { background: #0088cc; }
 .sh-copy { background: var(--olive); }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .hero-logo-wrap { width: 112px; height: 112px; }
+      .category-title { font-size: 1.2rem; }
+      .nav-brand-text span { display: none; }
+    }
