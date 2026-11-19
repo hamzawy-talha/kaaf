@@ -651,7 +651,14 @@
             <td><strong>${p.name}</strong></td>
             <td>${categoriesMap[String(p.category_id)] || '-'}</td>
             <td>${p.weight || '-'}</td>
-            <td><strong>${p.price !== null && p.price !== undefined ? p.price + ' ج.م' : (p.price_text || 'تواصل للسعر')}</strong></td>
+           <td>
+              ${p.price !== null && p.price !== undefined
+                ? `<strong>${p.price} ج.م</strong>` +
+                  (p.old_price && p.old_price > p.price
+                    ? ` <del style="color:#999;font-size:0.82rem;">${p.old_price} ج.م</del>`
+                    : '')
+                : (p.price_text || 'تواصل للسعر')}
+            </td>
             <td>
               <div class="actions-cell">
                 <button class="btn-edit" onclick="openProductModal('${p.id}')">✏️ تعديل</button>
@@ -715,6 +722,7 @@ async function uploadImage(file) {
         name: document.getElementById('prod-name').value.trim(),
         category_id: document.getElementById('prod-category').value,
         price: priceVal !== '' ? parseFloat(priceVal) : null,
+        old_price: oldPriceVal !== '' ? parseFloat(oldPriceVal) : null,
         weight: document.getElementById('prod-weight').value.trim(),
         image: image
       };
