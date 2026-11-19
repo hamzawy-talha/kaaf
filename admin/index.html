@@ -718,7 +718,10 @@ async function uploadImage(file) {
       if (file) image = await uploadImage(file);
 
       const priceVal = document.getElementById('prod-price').value;
-      const payload = {
+      const oldPriceEl = document.getElementById('prod-old-price');
+      const oldPriceVal = oldPriceEl ? oldPriceEl.value : '';
+
+       const payload = {
         name: document.getElementById('prod-name').value.trim(),
         category_id: document.getElementById('prod-category').value,
         price: priceVal !== '' ? parseFloat(priceVal) : null,
@@ -726,7 +729,7 @@ async function uploadImage(file) {
         weight: document.getElementById('prod-weight').value.trim(),
         image: image
       };
-
+      
       const res = editId
         ? await db.from('products').update(payload).eq('id', editId)
         : await db.from('products').insert([payload]);
