@@ -415,5 +415,109 @@ function sendOrderWhatsApp() {
 
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
 }
+// ========================
+// مشاركة المنتج وعرض الرابط المباشر
+// ========================
+function getProductShareData(pid) {
+  const prod = productsMap[pid];
+  if (!prod) return null;
 
+  const baseUrl = window.location.origin + window.location.pathname;
+  const shareUrl = `${baseUrl}?product=${prod.dbId}`;
+  const priceText = prod.price !== null && prod.price !== undefined
+    ? `${prod.price} ${STORE_CONFIG.currency}`
+    : (prod.priceText || 'تواصل للسعر');
+
+  const shareText = `🌿 *${prod.name}*${prod.unit ? ` (${prod.unit})` : ''}\n💰 السعر: ${priceText}\nمن متجر *${STORE_CONFIG.name}* - تكفيك وزيادة ✨`;
+
+  return { prod, shareUrl, shareText, priceText };
+}
+
+async function shareProduct(pid, event) {
+  if (event) event.stopPropagation();
+  const data = getProductShareData(pid);
+  if (!data) return;
+
+  // على الموبايل: يفتح قائمة المشاركة الأصلية (واتساب، فيسبوك، إلخ)
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: `${data.prod.name} - ${STORE_CONFIG.name}`,
+        text: data.shareText,
+        url: data.shareUrl
+      });
+      return;
+    } catch (err) {
+      if (err.name === 'AbortError') return; // ألغى المستخدم المشاركة
+    }
+  }
+
+  // على الكمبيوتر: يفتح نافذة المشاركة الجاهزة
+  const encodedUrl = encodeURIComponent(data.shareUrl);
+  const encodedFull = encodeURIComponent(`${data.shareText}\n\nاطلبه الآن من هنا:\n${data.shareUrl}`);
+
+  document.getElementById('shareModalBody').innerHTML = `
+    <p style="font-weight:800;color:var(--olive-dark);text-align:center;">${data.prod.name}</p>
+    <a class="share-social-btn sh-wa" target="_blank" href="https://wa.me/?text=${encodedFull}">مشاركة عبر واتساب 💬</a>
+    <a class="share-social-btn sh-fb" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}">مشاركة على فيسبوك 📘</a>
+    <a class="share-social-btn sh-tg" target="_blank" href="https://t.me/share/url?url=${encodedUrl}&text=${encodeURIComponent(data.shareText)}">مشاركة على تيليجرام ✈️</a>
+    <button type="button" class="share-social-btn sh-copy" onclick="copyShareLink('${data.shareUrl}', this)">نسخ رابط المنتج 📋</button>
+  `;
+  document.getElementById('shareModalOverlay').classList.add('open');
+}
+
+function copyShareLink(url, btn) {
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = '✅ تم نسخ الرابط!';
+    setTimeout(() => { btn.textContent = 'نسخ رابط المنتج 📋'; }, 2000);
+  });
+}
+
+function closeShareModal() {
+  document.getElementById('shareModalOverlay').classList.remove('open');
+}
+
+function openProductDetails(pid) {
+  const prod = productsMap[pid];
+  if (!prod) return;
+
+  const currency = STORE_CONFIG.currency;
+  const hasPrice = prod.price !== null && prod.price !== undefined;
+  const hasDiscount = hasPrice && prod.oldPrice && Number(prod.oldPrice) > Number(prod.price);
+
+  document.getElementById('productModalContent').innerHTML = `
+    <img src="${prod.image}" alt="${prod.name}" class="pm-img" onerror="this.src='${STORE_CONFIG.defaultImage}'" />
+    <div class="pm-body">
+      <div class="pm-title">${prod.name}</div>
+      ${prod.unit ? `<span class="product-unit">${prod.unit}</span>` : ''}
+      <div style="margin-top:12px;">
+        ${hasPrice
+          ? `${hasDiscount ? `<span class="old-price" style="margin-left:8px;">${prod.oldPrice} ${currency}</span>` : ''}
+             <span class="product-price" style="font-size:1.35rem;">${prod.price} ${currency}</span>`
+          : `<span class="product-price no-price">${prod.priceText}</span>`
+        }
+      </div>
+      <div class="pm-actions">
+        <button class="add-btn" onclick="addToCart('${prod._id}'); closeProductModal();">+ أضف للسلة 🛒</button>
+        <button class="share-full-btn" onclick="shareProduct('${prod._id}', event)">مشاركة 🔗</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('productModalOverlay').classList.add('open');
+}
+
+function closeProductModal() {
+  document.getElementById('productModalOverlay').classList.remove('open');
+}
+
+function checkSharedProduct() {
+  const params = new URLSearchParams(window.location.search);
+  const sharedId = params.get('product');
+  if (sharedId) {
+    const pid = `p_${sharedId}`;
+    if (productsMap[pid]) {
+      openProductDetails(pid);
+    }
+  }
+}
 loadMenuData();
